@@ -1,11 +1,20 @@
 #!/bin/bash
-# Simple setup.sh for configuring Ubuntu 12.04 LTS EC2 instance
-# for headless setup. 
+# setup.sh for configuring osx for development
+
+# We assume the user has MacPorts installed
+# Update MacPorts
+sudo port selfupdate
+
+# Use MacPorts to install basic commands
+sudo port install tree
+sudo port install wget
+
+# Install git
+sudo port install git-core +svn +doc +bash_completion +gitweb
 
 # Install nvm: node-version manager
 # https://github.com/creationix/nvm
-sudo apt-get install -y git
-sudo apt-get install -y curl
+# take script from github and pipe to sh for execution
 curl https://raw.github.com/creationix/nvm/master/install.sh | sh
 
 # Load nvm and install latest production node
@@ -19,17 +28,10 @@ npm install -g jshint
 
 # Install rlwrap to provide libreadline features with node
 # See: http://nodejs.org/api/repl.html#repl_repl
-sudo apt-get install -y rlwrap
+sudo port install rlwrap
 
-# Install emacs24
-# https://launchpad.net/~cassou/+archive/emacs
-sudo apt-add-repository -y ppa:cassou/emacs
-sudo apt-get -qq update
-sudo apt-get install -y emacs24-nox emacs24-el emacs24-common-non-dfsg
-
-# Install Heroku toolbelt
-# https://toolbelt.heroku.com/debian
-wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+# Install emacs
+sudo port install emacs
 
 # git pull and install dotfiles as well
 cd $HOME
@@ -39,10 +41,18 @@ fi
 if [ -d .emacs.d/ ]; then
     mv .emacs.d .emacs.d~
 fi
-git clone https://github.com/startup-class/dotfiles.git
-ln -sb dotfiles/.screenrc .
-ln -sb dotfiles/.bash_profile .
-ln -sb dotfiles/.bashrc .
-ln -sb dotfiles/.bashrc_custom .
-ln -sf dotfiles/.emacs.d .
+if [ -f .emacs ]; then
+    mv .emacs .emacs~
+fi
+if [ -f .bashrc ]; then
+    mv .bashrc .bashrc~
+fi
+if [ -f .bash_profile ]; then
+    mv .bash_profile .bash_profile~
+fi
 
+git clone https://github.com/MatthewPhinney/dotfiles.git
+mv dotfiles/.bash_profile .
+mv dotfiles/.bashrc .
+mv dotfiles/.bashrc_custom .
+mv dotfiles/.emacs.d .
